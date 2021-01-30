@@ -24,8 +24,6 @@ RUN update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 
 USER python
 
-
-
 # MMS required: Label to advertise MMS + use SAGEMAKER_BIND_TO_PORT env var if present
 LABEL com.amazonaws.sagemaker.capabilities.multi-models=true
 LABEL com.amazonaws.sagemaker.capabilities.accept-bind-to-port=true
@@ -71,17 +69,13 @@ RUN pip install --no-cache-dir cython==0.29.21 \
                                                       lightgbm==2.3.1 \
                                                       shapely==1.7.1
                                         
-RUN pip3 install --no-cache-dir fasttext 
+#RUN pip install --no-cache-dir fasttext 
                                         
 # scikit learn not passing infrasecurity scan
 RUN pip uninstall -y scikit-learn
 
 # Test lib
-RUN python -c "import torch, cv2, pandas, fasttext"
-
-# MMS required paths
-RUN mkdir -p $DIR_TEMP \
- && mkdir -p /opt/ml/model
+RUN python -c "import torch, cv2, pandas"
 
 # Copy entrypoint script to the image
 COPY ./docker-entrypoint.py /usr/local/bin/docker_entrypoint.py
