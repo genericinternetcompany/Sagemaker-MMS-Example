@@ -22,6 +22,10 @@ RUN python ./get-pip.py
 
 RUN update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 
+RUN useradd -m model-server \
+ && mkdir -p /home/model-server/tmp \
+ && chown -R model-server /home/model-server
+
 USER python
 
 # MMS required: Label to advertise MMS + use SAGEMAKER_BIND_TO_PORT env var if present
@@ -70,14 +74,14 @@ RUN pip install --no-cache-dir cython==0.29.21 \
                                                       shapely==1.7.1
                                         
 #RUN pip install --no-cache-dir fasttext 
+
+RUN pip install --no-cache-dir mxnet \
+                            model-archiver
                                         
 # scikit learn not passing infrasecurity scan
 RUN pip uninstall -y scikit-learn
 
-# Test lib
-RUN python -c "import torch, cv2, pandas"
-
-# Copy entrypoint script to the image
+COPY config.properties /home/model-server
 COPY ./docker-entrypoint.py /usr/local/bin/docker_entrypoint.py
 
 # Copy the default custom service file to handle incoming data and inference requests
